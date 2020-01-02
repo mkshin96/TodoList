@@ -1,15 +1,14 @@
 package me.mugon.todolist.service;
 
 import lombok.RequiredArgsConstructor;
+import me.mugon.todolist.domain.Account;
 import me.mugon.todolist.domain.TodoList;
 import me.mugon.todolist.domain.dto.TodoListDto;
 import me.mugon.todolist.repository.TodoListRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,12 +22,13 @@ public class TodoListService {
 
     private final ModelMapper modelMapper;
 
-    public List<TodoList> getTodoLists() {
-        return tdlRepository.findAll();
+    public List<TodoList> getTodoLists(Account currentUser) {
+        return tdlRepository.findAllByAccount(currentUser);
     }
 
-    public ResponseEntity<?> saveTodoList(TodoListDto tdlDto) {
+    public ResponseEntity<?> saveTodoList(TodoListDto tdlDto, Account currentUser) {
         TodoList tdl = this.modelMapper.map(tdlDto, TodoList.class);
+        tdl.mappingAccount(currentUser);
         TodoList newTdl = this.tdlRepository.save(setCreateAtAndStatus(tdl));
         return new ResponseEntity<>(newTdl, HttpStatus.CREATED);
     }

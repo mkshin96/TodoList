@@ -1,6 +1,8 @@
 package me.mugon.todolist.controller;
 
 import lombok.RequiredArgsConstructor;
+import me.mugon.todolist.common.CurrentUser;
+import me.mugon.todolist.domain.Account;
 import me.mugon.todolist.domain.dto.TodoListDto;
 import me.mugon.todolist.service.TodoListService;
 import org.springframework.http.MediaType;
@@ -20,22 +22,21 @@ public class TodoListController {
     private final TodoListService tdlService;
 
     @GetMapping
-    public String getTodoLists(Model model) {
-        model.addAttribute("tdl", tdlService.getTodoLists());
+    public String getTodoLists(Model model, @CurrentUser Account currentUser) {
+        model.addAttribute("tdl", tdlService.getTodoLists(currentUser));
         return "/tdl/list";
     }
 
-
     @PostMapping
-    public ResponseEntity<?> saveTodoList(@RequestBody @Valid TodoListDto tdlDto, Errors errors) {
+    public ResponseEntity<?> saveTodoList(@RequestBody @Valid TodoListDto tdlDto, Errors errors, @CurrentUser Account currentUser) {
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
         }
-        return tdlService.saveTodoList(tdlDto);
+        return tdlService.saveTodoList(tdlDto, currentUser);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<?> updateTodoList(@PathVariable Long id, @RequestBody @Valid TodoListDto tdlDto, Errors errors) {
+    public ResponseEntity<?> updateTodoList(@PathVariable Long id, @RequestBody @Valid TodoListDto tdlDto, Errors errors, @CurrentUser Account currentUser) {
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
         }

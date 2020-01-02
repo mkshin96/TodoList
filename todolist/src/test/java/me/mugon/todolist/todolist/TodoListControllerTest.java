@@ -1,41 +1,35 @@
 package me.mugon.todolist.todolist;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import me.mugon.todolist.common.BaseControllerTest;
+import me.mugon.todolist.domain.Account;
+import me.mugon.todolist.domain.AccountRole;
 import me.mugon.todolist.domain.TodoList;
 import me.mugon.todolist.domain.dto.TodoListDto;
+import me.mugon.todolist.repository.AccountRepository;
 import me.mugon.todolist.repository.TodoListRepository;
+import me.mugon.todolist.service.AccountService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-class TodoListControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+class TodoListControllerTest extends BaseControllerTest {
 
     @Autowired
     private TodoListRepository tdlRepo;
@@ -43,14 +37,28 @@ class TodoListControllerTest {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private AccountRepository accountRepo;
+
     private final String todoUri = "/todolists";
+
+    @BeforeEach
+    void setUp() {
+        tdlRepo.deleteAll();
+        accountRepo.deleteAll();
+    }
 
     @Test
     @DisplayName("todo 조회하기")
     public void get_todo() throws Exception {
-        IntStream.rangeClosed(1, 30).forEach(i -> createTdl());
+        Account account = generateAccount();
+        IntStream.rangeClosed(1, 30).forEach(i -> createTdl(account));
 
-        mockMvc.perform(get(todoUri))
+        mockMvc.perform(get(todoUri)
+                        .with(user(generateUserDetails())))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("/tdl/list"));
@@ -65,6 +73,7 @@ class TodoListControllerTest {
 
         //WHEN, THEN
         mockMvc.perform(post(todoUri)
+                        .with(user(generateUserDetails_need_generateAccount()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tdlDto)))
                 .andDo(print())
@@ -86,6 +95,7 @@ class TodoListControllerTest {
 
         //WHEN, THEN
         mockMvc.perform(post(todoUri)
+                        .with(user(generateUserDetails_need_generateAccount()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tdlDto)))
                 .andDo(print())
@@ -105,8 +115,9 @@ class TodoListControllerTest {
         tdlDto.setDescription(longLengthString);
 
         mockMvc.perform(post(todoUri)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tdlDto)))
+                            .with(user(generateUserDetails_need_generateAccount()))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(tdlDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("[*].objectName").exists())
@@ -118,11 +129,13 @@ class TodoListControllerTest {
     @Test
     @DisplayName("정상적으로 todo 수정하기")
     void update_todo() throws Exception {
-        TodoList savedTdl = createTdl();
+        Account account = generateAccount();
+        TodoList savedTdl = createTdl(account);
         TodoListDto tdlDto = modelMapper.map(savedTdl, TodoListDto.class);
         tdlDto.setDescription("그냥 집에서 쉬기");
 
         mockMvc.perform(put(todoUri + "/{id}", savedTdl.getId())
+                            .with(user(generateUserDetails()))
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(tdlDto)))
                 .andDo(print())
@@ -138,13 +151,15 @@ class TodoListControllerTest {
     @ParameterizedTest(name = "{displayName}{index}")
     @ValueSource(strings = {"", "            "})
     void update_todo_bad_request_blank_value(String description) throws Exception {
-        TodoList savedTdl = createTdl();
+        Account account = generateAccount();
+        TodoList savedTdl = createTdl(account);
         TodoListDto tdlDto = modelMapper.map(savedTdl, TodoListDto.class);
         tdlDto.setDescription(description);
 
         mockMvc.perform(put(todoUri + "/{id}", savedTdl.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tdlDto)))
+                            .with(user(generateUserDetails()))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(tdlDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("[*].objectName").exists())
@@ -157,14 +172,15 @@ class TodoListControllerTest {
     @Test
     void update_todo_bad_request_long_value() throws Exception {
         String longLengthString = generateLongString();
-
-        TodoList savedTdl = createTdl();
+        Account account = generateAccount();
+        TodoList savedTdl = createTdl(account);
         TodoListDto tdlDto = modelMapper.map(savedTdl, TodoListDto.class);
         tdlDto.setDescription(longLengthString);
 
         mockMvc.perform(put(todoUri + "/{id}", savedTdl.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tdlDto)))
+                            .with(user(generateUserDetails()))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(tdlDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("[*].objectName").exists())
@@ -176,9 +192,11 @@ class TodoListControllerTest {
     @Test
     @DisplayName("정상적으로 todo 삭제하기")
     void delete_todo() throws Exception {
-        TodoList savedTdl = createTdl();
+        Account account = generateAccount();
+        TodoList savedTdl = createTdl(account);
 
-        mockMvc.perform(delete(todoUri + "/{id}", savedTdl.getId()))
+        mockMvc.perform(delete(todoUri + "/{id}", savedTdl.getId())
+                        .with(user(generateUserDetails())))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -186,17 +204,20 @@ class TodoListControllerTest {
     @Test
     @DisplayName("삭제하려는 todo의 id가 저장되어 있지 않을 때")
     void delete_todo_not_found() throws Exception {
-        createTdl();
-        mockMvc.perform(delete(todoUri + "/{id}", new Random().nextInt(1000)))
+        Account account = generateAccount();
+        createTdl(account);
+        mockMvc.perform(delete(todoUri + "/{id}", Long.MIN_VALUE)
+                        .with(user(generateUserDetails())))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
 
-    private TodoList createTdl() {
+    private TodoList createTdl(Account account) {
         TodoList tdl = TodoList.builder()
                 .description("운동 하기")
                 .status(false)
                 .createdAt(LocalDateTime.now())
+                .account(account)
                 .build();
         return tdlRepo.save(tdl);
     }
@@ -213,5 +234,25 @@ class TodoListControllerTest {
         assertEquals(longRandomString.length(), 256, "랜덤 문자열의 길이가 256이 아닙니다.");
 
         return longRandomString;
+    }
+
+    private UserDetails generateUserDetails_need_generateAccount() {
+        generateAccount();
+        return this.accountService.loadUserByUsername(appProperties.getTestEmail());
+    }
+
+    private UserDetails generateUserDetails() {
+        return this.accountService.loadUserByUsername(appProperties.getTestEmail());
+    }
+
+    private Account generateAccount() {
+        return accountRepo.save(
+                Account.builder()
+                .email(appProperties.getTestEmail())
+                .password(appProperties.getTestPassword())
+                .createdAt(LocalDateTime.now())
+                .accountRoles(Collections.singletonList(AccountRole.USER))
+                .build()
+        );
     }
 }

@@ -7,3 +7,7 @@ logging:
     org:
       hibernate:
         SQL: DEBUG
+
+app-properties:
+  test-email: user@email.com
+  test-password: password
