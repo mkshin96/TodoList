@@ -40,6 +40,7 @@ public class TodoListService {
         }
         TodoList todoList = updatedTdl.get();
         this.modelMapper.map(tdlDto, todoList);
+        todoList.setUpdatedAt(LocalDateTime.now());
         TodoList savedTdl = tdlRepository.save(todoList);
         return ResponseEntity.ok().body(savedTdl);
     }
