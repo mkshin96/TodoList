@@ -19,12 +19,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -44,6 +44,17 @@ class TodoListControllerTest {
     private ModelMapper modelMapper;
 
     private final String todoUri = "/todolists";
+
+    @Test
+    @DisplayName("todo 조회하기")
+    public void get_todo() throws Exception {
+        IntStream.rangeClosed(1, 30).forEach(i -> createTdl());
+
+        mockMvc.perform(get(todoUri))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(view().name("/tdl/list"));
+    }
 
     @Test
     @DisplayName("정상적으로 todo 생성하기")

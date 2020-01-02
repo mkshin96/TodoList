@@ -6,6 +6,7 @@ import me.mugon.todolist.service.TodoListService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,13 @@ import javax.validation.Valid;
 public class TodoListController {
 
     private final TodoListService tdlService;
+
+    @GetMapping
+    public String getTodoLists(Model model) {
+        model.addAttribute("tdl", tdlService.getTodoLists());
+        return "/tdl/list";
+    }
+
 
     @PostMapping
     public ResponseEntity<?> saveTodoList(@RequestBody @Valid TodoListDto tdlDto, Errors errors) {
