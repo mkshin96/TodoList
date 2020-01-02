@@ -21,8 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -162,7 +161,26 @@ class TodoListControllerTest {
                 .andExpect(jsonPath("[*].code").exists())
                 .andExpect(jsonPath("[*].defaultMessage").exists());
     }
-    
+
+    @Test
+    @DisplayName("정상적으로 todo 삭제하기")
+    void delete_todo() throws Exception {
+        TodoList savedTdl = createTdl();
+
+        mockMvc.perform(delete(todoUri + "/{id}", savedTdl.getId()))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("삭제하려는 todo의 id가 저장되어 있지 않을 때")
+    void delete_todo_not_found() throws Exception {
+        createTdl();
+        mockMvc.perform(delete(todoUri + "/{id}", new Random().nextInt(1000)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
     private TodoList createTdl() {
         TodoList tdl = TodoList.builder()
                 .description("운동 하기")

@@ -33,4 +33,9 @@ public class TodoListController {
         }
         return tdlService.updateTodoList(id, tdlDto);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteTodoList(@PathVariable Long id) {
+        return tdlService.deleteTodoList(id);
+    }
 }

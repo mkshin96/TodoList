@@ -44,4 +44,15 @@ public class TodoListService {
         TodoList savedTdl = tdlRepository.save(todoList);
         return ResponseEntity.ok().body(savedTdl);
     }
+
+    public ResponseEntity<?> deleteTodoList(Long id) {
+        Optional<TodoList> todoListOptional = tdlRepository.findById(id);
+        if (!todoListOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        TodoList tdl = todoListOptional.get();
+        tdlRepository.delete(tdl);
+        return ResponseEntity.ok().build();
+    }
 }
