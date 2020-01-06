@@ -356,7 +356,7 @@ class CommentControllerTest extends BaseControllerTest {
         assertNotNull(newTodo.getAccount());
         assertNotNull(newTodo.getCreatedAt());
 
-        return tdlRepo.save(newTodo);
+        return newTodo;
     }
 
     private String generateLongString() {
