@@ -27,8 +27,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -179,7 +178,7 @@ class CommentControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("todoList.status").value(false))
                 .andExpect(jsonPath("todoList.createdAt").isNotEmpty())
                 .andExpect(jsonPath("todoList.updatedAt").isEmpty())
-                .andExpect(jsonPath("todoList.account.id").value(1))
+                .andExpect(jsonPath("todoList.account.id").isNotEmpty())
                 .andExpect(jsonPath("todoList.account.email").value(appProperties.getTestEmail()))
                 .andExpect(jsonPath("todoList.account.createdAt").isNotEmpty());
     }
@@ -261,6 +260,29 @@ class CommentControllerTest extends BaseControllerTest {
                 .with(user(generateUserDetails()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateComment)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("존재하지 않는 댓글입니다."));
+    }
+
+    @Test
+    @DisplayName("정상적으로 댓글 삭제")
+    void deleteComment() throws Exception {
+        Comment comment = generateComment_dont_need_todo();
+
+        mockMvc.perform(delete(commentUri + "/{commentId}", comment.getId())
+                        .with(user(generateUserDetails())))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("삭제하려는 댓글이 저장되지 않은 댓글일 때")
+    void deleteComment_empty_comment() throws Exception {
+        generateComment_dont_need_todo();
+
+        mockMvc.perform(delete(commentUri + "/{commentId}", 285)
+                .with(user(generateUserDetails())))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message").value("존재하지 않는 댓글입니다."));

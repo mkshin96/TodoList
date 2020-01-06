@@ -47,4 +47,13 @@ public class CommentService {
         Comment updatedComment = commentRepository.save(updatingComment);
         return new ResponseEntity<>(updatedComment, HttpStatus.OK);
     }
+
+    public ResponseEntity<?> deleteComment(Long commentId) {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        if (!comment.isPresent()) {
+            return new ResponseEntity<>(new ErrorMessage("존재하지 않는 댓글입니다."), HttpStatus.BAD_REQUEST);
+        }
+        commentRepository.delete(comment.get());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

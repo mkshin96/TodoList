@@ -37,4 +37,9 @@ public class CommentController {
         return commentService.updateComment(commentId, commentDto);
     }
 
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
+        return commentService.deleteComment(commentId);
+    }
+
 }
