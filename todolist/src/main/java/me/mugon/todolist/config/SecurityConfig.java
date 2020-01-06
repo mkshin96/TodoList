@@ -31,12 +31,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.POST,"/users", "/login", "/users/checkEmail")
-                        .permitAll()
-                    .antMatchers(HttpMethod.GET, "/js/**", "/css/**", "/images/**", "/fonts/**", "/users", "/login/**")
-                        .permitAll()
-                    .anyRequest()
-                        .authenticated()
+                .antMatchers(HttpMethod.POST,"/users")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/js/**", "/css/**", "/images/**", "/fonts/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .formLogin()
                 .usernameParameter("email")
@@ -44,11 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successForwardUrl("/login/success")
                 .and()
                 .logout()
-                    .logoutUrl("/logout")
-                    .logoutSuccessUrl("/login")
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
                 .and()
                 .csrf()
-                    .disable();
+                .disable();
     }
 
     @Override
