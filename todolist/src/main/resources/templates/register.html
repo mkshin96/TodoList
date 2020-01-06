@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="login-form">
+    <form onsubmit="return false;">
+        <input type="email" class="email text-field" placeholder="email" ><br>
+        <span class="emailErrorMessage"></span>
+        <input type="password" class="password text-field" placeholder="4자 이상의 password"><br>
+        <span class="passwordErrorMessage"></span>
+        <input type="submit" class="register" value="회원가입"><br>
+    </form>
+    <div class="links">
+        <a href="http://localhost:8080/toDoList/login">뒤로가기</a>
+    </div>
+</div>
+</body>
+</html>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/register.js}"></script>
+
+</html>

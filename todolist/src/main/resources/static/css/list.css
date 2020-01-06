@@ -1,0 +1,66 @@
+body{
+    font-family: 'Rajdhani', sans-serif;
+    color: #5bc0de;
+}
+
+td{
+    background-color: black;
+}
+
+.head2{
+    font-family: 'Rajdhani', sans-serif;
+}
+
+#register{
+    font-family: 'Rajdhani', sans-serif;
+    background-color: white;
+    color: #5bc0de;
+}
+
+#description{
+    background-color: white;
+    color: #5bc0de;
+}
+
+
+#deleteAll{
+    font-family: 'Rajdhani', sans-serif;
+    background-color: white;
+    color: #5bc0de;
+    border-color: #5bc0de;
+}
+.logout{
+    font-family: 'Rajdhani', sans-serif;
+    background-color: white;
+    color: #5bc0de;
+    border-color: #5bc0de;
+}
+
+.replyContent{
+    background-color: #a6e1ec;
+    color: white;
+}
+
+.replyRegister{
+    background-color: #a6e1ec;
+    color:white;
+    font-family: 'Rajdhani', sans-serif;
+}
+.textBox{
+    color: black;
+    border: 3px;
+    background-color: #a6e1ec;
+    height: fit-content;
+}
+
+dt{
+    margin: 0;
+    display: inline;
+}
+
+dd{
+    float: right;
+    margin: 0;
+    display: inline;
+}
+

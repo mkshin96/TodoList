@@ -6,22 +6,18 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @NoArgsConstructor @AllArgsConstructor @Builder
 @Entity @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class TodoList {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private String description;
-
-    @Column
-    private boolean status;
+    private String body;
 
     @Column
     private LocalDateTime createdAt;
@@ -30,16 +26,14 @@ public class TodoList {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    private Account account;
+    private TodoList todoList;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "todoList")
-    private Set<Comment> comments;
-
-    public void mappingAccount(Account currentUser) {
-        if (this.account != null) {
-            this.account.getTodoLists().remove(this);
+    public Comment mappingTodo(TodoList todoList) {
+        if (this.todoList != null) {
+            this.todoList.getComments().remove(this);
         }
-        this.account = currentUser;
-        this.account.getTodoLists().add(this);
+        this.todoList = todoList;
+        this.todoList.getComments().add(this);
+        return this;
     }
 }

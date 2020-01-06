@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>로그인</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="login-form">
+    <form th:action="@{/login}" method="post">
+        <input type="text"  class="email text-field" placeholder="email" name="email"><br>
+        <span class="emailErrorMessage"></span>
+        <input type="password"  class="password text-field" placeholder="비밀번호" name="password"><br>
+        <span class="passwordErrorMessage"></span>
+        <input type="submit" class="login" value="LOGIN">
+    </form>
+
+    <div class="links">
+        <a href="http://localhost:8080/users">ID가 없나요?</a>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/login.js}"></script>
+
+</body>
+</html>

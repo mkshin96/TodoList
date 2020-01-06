@@ -3,6 +3,7 @@ package me.mugon.todolist.service;
 import lombok.RequiredArgsConstructor;
 import me.mugon.todolist.domain.Account;
 import me.mugon.todolist.domain.AccountRole;
+import me.mugon.todolist.common.ErrorMessage;
 import me.mugon.todolist.domain.adapter.AccountAdapter;
 import me.mugon.todolist.domain.dto.AccountDto;
 import me.mugon.todolist.repository.AccountRepository;
@@ -43,10 +44,19 @@ public class AccountService implements UserDetailsService {
         return new ResponseEntity<>(newAccount, HttpStatus.CREATED);
     }
 
+    public ResponseEntity<?> checkEmail(AccountDto accountDto) {
+        Optional<Account> account = accountRepository.findByEmail(accountDto.getEmail());
+        if (account.isPresent()) {
+            return ResponseEntity.badRequest().body(new ErrorMessage("이미 존재하는 email입니다."));
+        }
+        return new ResponseEntity<>("{}", HttpStatus.CREATED);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username + "을 찾을 수 없습니다."));
         return new AccountAdapter(account);
     }
+
 }

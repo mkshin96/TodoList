@@ -61,4 +61,8 @@ public class TodoListService {
         tdlRepository.delete(tdl);
         return ResponseEntity.ok().build();
     }
+
+    public Optional<TodoList> findById(Long id) {
+        return tdlRepository.findById(id);
+    }
 }

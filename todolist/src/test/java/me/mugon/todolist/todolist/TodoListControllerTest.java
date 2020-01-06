@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -42,6 +43,9 @@ class TodoListControllerTest extends BaseControllerTest {
 
     @Autowired
     private AccountRepository accountRepo;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
     private final String todoUri = "/todolists";
 
@@ -249,7 +253,7 @@ class TodoListControllerTest extends BaseControllerTest {
         return accountRepo.save(
                 Account.builder()
                 .email(appProperties.getTestEmail())
-                .password(appProperties.getTestPassword())
+                .password(encoder.encode(appProperties.getTestPassword()))
                 .createdAt(LocalDateTime.now())
                 .accountRoles(Collections.singletonList(AccountRole.USER))
                 .build()
