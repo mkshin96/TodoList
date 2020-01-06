@@ -62,8 +62,7 @@ public class TodoListService {
         return ResponseEntity.ok().build();
     }
 
-    public TodoList findById(Long id) {
-        Optional<TodoList> todo = tdlRepository.findById(id);
-        return todo.orElse(null);
+    public Optional<TodoList> findById(Long id) {
+        return tdlRepository.findById(id);
     }
 }

@@ -139,7 +139,27 @@ class CommentControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("[*].field").exists());
     }
 
+    @Test
+    @DisplayName("댓글을 다려고 한 todo가 데이터베이스에 저장되어 있지 않은 todo일 때")
+    void saveComment_empty_todo() throws Exception {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setBody("11시에 운동가기");
+
+        mockMvc.perform(post(commentUri + "/{todoListId}", new Random().nextInt(1000))
+                        .with(user(generateUserDetails_need_generateAccount()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("존재하지 않는 todo입니다."));
+    }
+
     private UserDetails generateUserDetails() {
+        return this.accountService.loadUserByUsername(appProperties.getTestEmail());
+    }
+
+    private UserDetails generateUserDetails_need_generateAccount() {
+        generateAccount();
         return this.accountService.loadUserByUsername(appProperties.getTestEmail());
     }
 
