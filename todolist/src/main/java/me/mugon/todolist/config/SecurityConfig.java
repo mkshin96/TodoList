@@ -31,9 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/users")
+                .antMatchers(HttpMethod.POST,"/users", "/login", "/users/checkEmail")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/js/**", "/css/**", "/images/**", "/fonts/**")
+                .antMatchers(HttpMethod.GET, "/js/**", "/css/**", "/images/**", "/fonts/**", "/users", "/login/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -43,12 +43,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login")
                 .successForwardUrl("/login/success")
                 .and()
-                .logout()
-                .logoutUrl("/logout")
+                    .logout()
+                    .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
                 .and()
                 .csrf()
-                .disable();
+                    .disable();
     }
 
     @Override
