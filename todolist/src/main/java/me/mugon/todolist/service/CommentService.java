@@ -35,4 +35,16 @@ public class CommentService {
         Comment newComment = commentRepository.save(comment.mappingTodo(todoList.get()));
         return new ResponseEntity<>(newComment, HttpStatus.CREATED);
     }
+
+    public ResponseEntity<?> updateComment(Long commentId, CommentDto commentDto) {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        if (!comment.isPresent()) {
+            return new ResponseEntity<>(new ErrorMessage("존재하지 않는 댓글입니다."), HttpStatus.BAD_REQUEST);
+        }
+        Comment updatingComment = comment.get();
+        modelMapper.map(commentDto, updatingComment);
+        updatingComment.setUpdatedAt(LocalDateTime.now());
+        Comment updatedComment = commentRepository.save(updatingComment);
+        return new ResponseEntity<>(updatedComment, HttpStatus.OK);
+    }
 }

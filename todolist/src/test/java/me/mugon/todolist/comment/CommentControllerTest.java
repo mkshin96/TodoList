@@ -3,6 +3,7 @@ package me.mugon.todolist.comment;
 import me.mugon.todolist.common.BaseControllerTest;
 import me.mugon.todolist.domain.Account;
 import me.mugon.todolist.domain.AccountRole;
+import me.mugon.todolist.domain.Comment;
 import me.mugon.todolist.domain.TodoList;
 import me.mugon.todolist.domain.dto.CommentDto;
 import me.mugon.todolist.repository.AccountRepository;
@@ -24,9 +25,10 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -154,6 +156,148 @@ class CommentControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("message").value("존재하지 않는 todo입니다."));
     }
 
+    @Test
+    @DisplayName("정상적으로 수정하기")
+    void updateComment() throws Exception {
+        TodoList newTodo = generateTodo();
+        Comment comment = generateComment(newTodo);
+
+        CommentDto updateComment = modelMapper.map(comment, CommentDto.class);
+        updateComment.setBody("수정할 댓글입니다.");
+
+        mockMvc.perform(put(commentUri + "/{commentId}", comment.getId())
+                        .with(user(generateUserDetails()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateComment)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("body").value("수정할 댓글입니다."))
+                .andExpect(jsonPath("createdAt").isNotEmpty())
+                .andExpect(jsonPath("updatedAt").isNotEmpty())
+                .andExpect(jsonPath("todoList.id").isNotEmpty())
+                .andExpect(jsonPath("todoList.description").value("아침 7시에 운동가기"))
+                .andExpect(jsonPath("todoList.status").value(false))
+                .andExpect(jsonPath("todoList.createdAt").isNotEmpty())
+                .andExpect(jsonPath("todoList.updatedAt").isEmpty())
+                .andExpect(jsonPath("todoList.account.id").value(1))
+                .andExpect(jsonPath("todoList.account.email").value(appProperties.getTestEmail()))
+                .andExpect(jsonPath("todoList.account.createdAt").isNotEmpty());
+    }
+
+    @ParameterizedTest(name = "{displayName}{index}")
+    @ValueSource(strings = {"", "             "})
+    @DisplayName("body가 공백인 댓글로 수정을 요청했을 때 Bad Requet 반환")
+    void updateComment_empty_value_bad_request(String body) throws Exception {
+        TodoList newTodo = generateTodo();
+        Comment comment = generateComment(newTodo);
+
+        CommentDto updateComment = modelMapper.map(comment, CommentDto.class);
+        updateComment.setBody(body);
+
+        mockMvc.perform(put(commentUri + "/{commentId}", comment.getId())
+                .with(user(generateUserDetails()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateComment)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("[*].defaultMessage").exists())
+                .andExpect(jsonPath("[*].code").exists())
+                .andExpect(jsonPath("[*].objectName").exists())
+                .andExpect(jsonPath("[*].field").exists());
+    }
+
+    @Test
+    @DisplayName("body가 null인 댓글로 수정을 요청하였을 때 Bad Request 반환")
+    void updateComment_null_value_bad_request() throws Exception{
+        TodoList newTodo = generateTodo();
+        Comment comment = generateComment(newTodo);
+
+        CommentDto updateComment = modelMapper.map(comment, CommentDto.class);
+        updateComment.setBody(null);
+
+        mockMvc.perform(put(commentUri + "/{commentId}", comment.getId())
+                .with(user(generateUserDetails()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateComment)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("[*].defaultMessage").exists())
+                .andExpect(jsonPath("[*].code").exists())
+                .andExpect(jsonPath("[*].objectName").exists())
+                .andExpect(jsonPath("[*].field").exists());
+    }
+
+    @Test
+    @DisplayName("body가 255자 이상인 댓글로 수정을 요청하였을 때 Bad Request 반환")
+    void updateComment_longer_than_255_bad_request() throws Exception{
+        TodoList newTodo = generateTodo();
+        Comment comment = generateComment(newTodo);
+
+        CommentDto updateComment = modelMapper.map(comment, CommentDto.class);
+        updateComment.setBody(generateLongString());
+
+        mockMvc.perform(put(commentUri + "/{commentId}", comment.getId())
+                .with(user(generateUserDetails()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateComment)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("[*].defaultMessage").exists())
+                .andExpect(jsonPath("[*].code").exists())
+                .andExpect(jsonPath("[*].objectName").exists())
+                .andExpect(jsonPath("[*].field").exists());
+    }
+
+    @Test
+    @DisplayName("body가 255자 이상인 댓글로 수정을 요청하였을 때 Bad Request 반환")
+    void updateComment_empty_comment() throws Exception{
+        TodoList newTodo = generateTodo();
+        Comment comment = generateComment(newTodo);
+
+        CommentDto updateComment = modelMapper.map(comment, CommentDto.class);
+        updateComment.setBody("수정할 댓글입니다.");
+
+        mockMvc.perform(put(commentUri + "/{commentId}", 285)
+                .with(user(generateUserDetails()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateComment)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("존재하지 않는 댓글입니다."));
+    }
+
+    private Comment generateComment_dont_need_todo() {
+        Comment newComment = commentRepo.save(Comment.builder()
+                .body("나는 육회를 좋아한다.")
+                .createdAt(LocalDateTime.now())
+                .todoList(generateTodo())
+                .build()
+        );
+        assertNotNull(newComment);
+        assertNotNull(newComment.getId());
+        assertEquals(newComment.getBody(), "나는 육회를 좋아한다.");
+        assertNotNull(newComment.getTodoList());
+        assertNotNull(newComment.getCreatedAt());
+
+        return newComment;
+    }
+
+    private Comment generateComment(TodoList newTodo) {
+        Comment newComment = commentRepo.save(Comment.builder()
+                .body("나는 육회를 좋아한다.")
+                .createdAt(LocalDateTime.now())
+                .todoList(newTodo)
+                .build()
+        );
+        assertNotNull(newComment);
+        assertNotNull(newComment.getId());
+        assertEquals(newComment.getBody(), "나는 육회를 좋아한다.");
+        assertEquals(newComment.getTodoList(), newTodo);
+        assertNotNull(newComment.getCreatedAt());
+
+        return newComment;
+    }
+
     private UserDetails generateUserDetails() {
         return this.accountService.loadUserByUsername(appProperties.getTestEmail());
     }
@@ -175,13 +319,22 @@ class CommentControllerTest extends BaseControllerTest {
     }
 
     private TodoList generateTodo() {
-        TodoList todoList = TodoList.builder()
+        TodoList newTodo = tdlRepo.save(TodoList.builder()
                 .description("아침 7시에 운동가기")
                 .status(false)
                 .createdAt(LocalDateTime.now())
                 .account(generateAccount())
-                .build();
-        return tdlRepo.save(todoList);
+                .build()
+        );
+
+        assertNotNull(newTodo);
+        assertNotNull(newTodo.getId());
+        assertEquals(newTodo.getDescription(), "아침 7시에 운동가기");
+        assertFalse(newTodo.isStatus());
+        assertNotNull(newTodo.getAccount());
+        assertNotNull(newTodo.getCreatedAt());
+
+        return tdlRepo.save(newTodo);
     }
 
     private String generateLongString() {

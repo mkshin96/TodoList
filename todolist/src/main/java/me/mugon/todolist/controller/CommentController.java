@@ -28,4 +28,13 @@ public class CommentController {
         return commentService.saveComment(todoListId, commentDto);
     }
 
+    @PutMapping("/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
+                                           @Valid @RequestBody CommentDto commentDto, Errors errors, @CurrentUser Account currentUser) {
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+        return commentService.updateComment(commentId, commentDto);
+    }
+
 }
