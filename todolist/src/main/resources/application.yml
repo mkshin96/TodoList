@@ -19,3 +19,8 @@ logging:
 app-properties:
   test-email: user@email.com
   test-password: password
+
+custom:
+  oauth2:
+    kakao:
+        client-id: 4236b1428dc75ac172f6063df9f0c5fe

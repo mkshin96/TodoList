@@ -11,3 +11,8 @@ $('.password').blur(function () {
         return false;
     }
 });
+
+$('.btn_social').click(function () {
+    var socialType = $(this).data('social');
+    location.href="/oauth2/authorization/"+socialType;
+});

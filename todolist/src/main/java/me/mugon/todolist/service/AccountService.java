@@ -2,7 +2,7 @@ package me.mugon.todolist.service;
 
 import lombok.RequiredArgsConstructor;
 import me.mugon.todolist.domain.Account;
-import me.mugon.todolist.domain.AccountRole;
+import me.mugon.todolist.domain.enums.AccountRole;
 import me.mugon.todolist.common.ErrorMessage;
 import me.mugon.todolist.domain.adapter.AccountAdapter;
 import me.mugon.todolist.domain.dto.AccountDto;
@@ -10,6 +10,7 @@ import me.mugon.todolist.repository.AccountRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -58,5 +59,4 @@ public class AccountService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username + "을 찾을 수 없습니다."));
         return new AccountAdapter(account);
     }
-
 }

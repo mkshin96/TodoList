@@ -1,4 +1,4 @@
-package me.mugon.todolist.common;
+package me.mugon.todolist.annotation;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 

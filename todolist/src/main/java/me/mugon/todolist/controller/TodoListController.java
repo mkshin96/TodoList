@@ -1,7 +1,8 @@
 package me.mugon.todolist.controller;
 
 import lombok.RequiredArgsConstructor;
-import me.mugon.todolist.common.CurrentUser;
+import me.mugon.todolist.annotation.SocialUser;
+import me.mugon.todolist.annotation.CurrentUser;
 import me.mugon.todolist.domain.Account;
 import me.mugon.todolist.domain.dto.TodoListDto;
 import me.mugon.todolist.service.TodoListService;
@@ -23,6 +24,12 @@ public class TodoListController {
 
     @GetMapping
     public String getTodoLists(Model model, @CurrentUser Account currentUser) {
+        model.addAttribute("tdl", tdlService.getTodoLists(currentUser));
+        return "/tdl/list";
+    }
+
+    @GetMapping("/oauth")
+    public String getTodoListsWithOAuth(Model model, @SocialUser Account currentUser) {
         model.addAttribute("tdl", tdlService.getTodoLists(currentUser));
         return "/tdl/list";
     }

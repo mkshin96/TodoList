@@ -2,7 +2,7 @@ package me.mugon.todolist.comment;
 
 import me.mugon.todolist.common.BaseControllerTest;
 import me.mugon.todolist.domain.Account;
-import me.mugon.todolist.domain.AccountRole;
+import me.mugon.todolist.domain.enums.AccountRole;
 import me.mugon.todolist.domain.Comment;
 import me.mugon.todolist.domain.TodoList;
 import me.mugon.todolist.domain.dto.CommentDto;
