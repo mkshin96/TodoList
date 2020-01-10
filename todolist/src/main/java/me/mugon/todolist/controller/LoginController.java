@@ -17,9 +17,4 @@ public class LoginController {
     public String loginSuccess() {
         return "redirect:/todolists";
     }
-
-    @GetMapping("/oauth/success")
-    public String oauth2LoginSuccess() {
-        return "redirect:/todolists/oauth";
-    }
 }

@@ -1,8 +1,9 @@
 package me.mugon.todolist.resolver;
 
 import lombok.RequiredArgsConstructor;
-import me.mugon.todolist.annotation.SocialUser;
+import me.mugon.todolist.annotation.CurrentUser;
 import me.mugon.todolist.domain.Account;
+import me.mugon.todolist.domain.adapter.AccountAdapter;
 import me.mugon.todolist.domain.enums.SocialType;
 import me.mugon.todolist.repository.AccountRepository;
 import org.springframework.core.MethodParameter;
@@ -33,7 +34,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterAnnotation(SocialUser.class) != null && parameter.getParameterType().equals(Account.class);
+        return parameter.getParameterAnnotation(CurrentUser.class) != null && parameter.getParameterType().equals(Account.class);
     }
 
     @Override
@@ -47,6 +48,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
         if (account == null) {
             try {
                 OAuth2AuthenticationToken authentication = (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+
                 Map<String, Object> map = authentication.getPrincipal().getAttributes();
                 Account convertAccount = convertAccount(authentication.getAuthorizedClientRegistrationId(), map);
                 assert convertAccount != null;
@@ -55,10 +57,15 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
                 selfRoleIfNotSame(account, authentication, map);
                 session.setAttribute("account", account);
             } catch (ClassCastException e) {
-                return account;
+                return getIdPasswordAccount();
             }
         }
         return account;
+    }
+
+    private Account getIdPasswordAccount() {
+        AccountAdapter idPasswordAccount = (AccountAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return idPasswordAccount.getAccount();
     }
 
     private void selfRoleIfNotSame(Account account, OAuth2AuthenticationToken authentication, Map<String, Object> map) {
