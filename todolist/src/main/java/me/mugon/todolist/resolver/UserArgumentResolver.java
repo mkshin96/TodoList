@@ -3,6 +3,7 @@ package me.mugon.todolist.resolver;
 import lombok.RequiredArgsConstructor;
 import me.mugon.todolist.annotation.SocialUser;
 import me.mugon.todolist.domain.Account;
+import me.mugon.todolist.domain.enums.SocialType;
 import me.mugon.todolist.repository.AccountRepository;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import static me.mugon.todolist.domain.enums.SocialType.KAKAO;
+import static me.mugon.todolist.domain.enums.SocialType.*;
 
 @Component
 @RequiredArgsConstructor
@@ -68,8 +69,19 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     private Account convertAccount(String authority, Map<String, Object> map) {
+        if (FACEBOOK.isEquals(authority)) return getModernUser(FACEBOOK, map);
+        if (GOOGLE.isEquals(authority)) return getModernUser(GOOGLE, map);
         if (KAKAO.isEquals(authority)) return getKaKaoAccount(map);
         return null;
+    }
+
+    private Account getModernUser(SocialType socialType, Map<String, Object> map) {
+        return Account.builder()
+                .email(String.valueOf(map.get("email")))
+                .principal(String.valueOf(map.get("id")))
+                .socialType(socialType)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     private Account getKaKaoAccount(Map<String, Object> map) {

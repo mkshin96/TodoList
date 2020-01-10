@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static me.mugon.todolist.domain.enums.SocialType.KAKAO;
+import static me.mugon.todolist.domain.enums.SocialType.*;
 
 @Configuration
 @EnableWebSecurity(debug = false)
@@ -52,6 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .permitAll()
                     .antMatchers(HttpMethod.GET, "/js/**", "/css/**", "/images/**", "/fonts/**", "/users", "/login/**")
                         .permitAll()
+                    .antMatchers("/google")
+                        .hasAuthority(GOOGLE.getRoleType())
+                    .antMatchers("/facebook")
+                        .hasAuthority(FACEBOOK.getRoleType())
                     .antMatchers("/kakao")
                         .hasAuthority(KAKAO.getRoleType())
                 .anyRequest()
@@ -87,13 +92,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public ClientRegistrationRepository clientRegistrationRepository(@Value("${custom.oauth2.kakao.client-id}") String kakaoClientId) {
+    public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties oAuth2ClientProperties,
+                                                                     @Value("${custom.oauth2.kakao.client-id}") String kakaoClientId) {
+        List<ClientRegistration> registrations = oAuth2ClientProperties.getRegistration().keySet().stream()
+                .map(client -> getRegistration(oAuth2ClientProperties, client))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
         ClientRegistration clientRegistration = CustomOAuth2Provider.KAKAO.getBuilder("kakao")
                 .clientId(kakaoClientId)
-                .clientSecret("test") //필요없는 값인데 null이면 실행이 안되도록 설정되어 있다고 한다.
-                .jwkSetUri("test") //필요없는 값인데 null이면 실행이 안되도록 설정되어 있다고 한다.
+                .clientSecret("test") //필요없는 값인데 null이면 실행이 안되도록 설정되어 있다.
+                .jwkSetUri("test") //필요없는 값인데 null이면 실행이 안되도록 설정되어 있다.
                 .build();
 
-        return new InMemoryClientRegistrationRepository(clientRegistration);
+        registrations.add(clientRegistration);
+
+        return new InMemoryClientRegistrationRepository(registrations);
+    }
+
+    private ClientRegistration getRegistration(OAuth2ClientProperties oAuth2ClientProperties, String client) {
+        if ("google".equals(client)) {
+            OAuth2ClientProperties.Registration registration = oAuth2ClientProperties.getRegistration().get("google");
+            return CommonOAuth2Provider.GOOGLE.getBuilder(client)
+                    .clientId(registration.getClientId())
+                    .clientSecret(registration.getClientSecret())
+                    .scope("email", "profile")
+                    .build();
+        }
+        if ("facebook".equals(client)) {
+            OAuth2ClientProperties.Registration registration = oAuth2ClientProperties.getRegistration().get("facebook");
+            return CommonOAuth2Provider.FACEBOOK.getBuilder(client)
+                    .clientId(registration.getClientId())
+                    .clientSecret(registration.getClientSecret())
+                    .userInfoUri("https://graph.facebook.com/me?fields=id,name,email,link")
+                    .scope("email")
+                    .build();
+        }
+        return null;
     }
 }

@@ -1,6 +1,8 @@
 package me.mugon.todolist.domain.enums;
 
 public enum  SocialType {
+    GOOGLE("google"),
+    FACEBOOK("facebook"),
     KAKAO("kakao");
 
     private final String ROLE_PREFIX = "ROLE_";

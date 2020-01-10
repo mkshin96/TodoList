@@ -10,6 +10,16 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+  security:
+    oauth2:
+      client:
+        registration:
+#          google:
+#            client-id:
+#            client-secret:
+          facebook:
+            client-id: 2712903008942408
+            client-secret: 1258109c92deadbdaa02a00ddfa296b0
 logging:
   level:
     org:
