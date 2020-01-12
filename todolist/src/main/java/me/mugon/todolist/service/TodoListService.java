@@ -1,6 +1,7 @@
 package me.mugon.todolist.service;
 
 import lombok.RequiredArgsConstructor;
+import me.mugon.todolist.common.ErrorMessage;
 import me.mugon.todolist.domain.Account;
 import me.mugon.todolist.domain.TodoList;
 import me.mugon.todolist.domain.dto.TodoListDto;
@@ -64,5 +65,16 @@ public class TodoListService {
 
     public Optional<TodoList> findById(Long id) {
         return tdlRepository.findById(id);
+    }
+
+    public ResponseEntity<?> completeTodoList(Long id) {
+        Optional<TodoList> byId = tdlRepository.findById(id);
+        if (!byId.isPresent()) {
+            return ResponseEntity.badRequest().body(new ErrorMessage("존재하지 않는 todo입니다."));
+        }
+        TodoList todoList = byId.get();
+        todoList.updateStatusAndCompletedDate();
+        TodoList statusTodoList = tdlRepository.save(todoList);
+        return ResponseEntity.ok(statusTodoList);
     }
 }

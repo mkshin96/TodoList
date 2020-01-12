@@ -47,4 +47,9 @@ public class TodoListController {
     public ResponseEntity<?> deleteTodoList(@PathVariable Long id) {
         return tdlService.deleteTodoList(id);
     }
+
+    @PutMapping(value = "/{id}/complete")
+    public ResponseEntity<?> completeTodoList(@PathVariable Long id) {
+        return tdlService.completeTodoList(id);
+    }
 }

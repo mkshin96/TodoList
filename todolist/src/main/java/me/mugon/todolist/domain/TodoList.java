@@ -29,6 +29,9 @@ public class TodoList {
     @Column
     private LocalDateTime updatedAt;
 
+    @Column
+    private LocalDateTime completedAt;
+
     @ManyToOne
     private Account account;
 
@@ -41,5 +44,10 @@ public class TodoList {
         }
         this.account = currentUser;
         this.account.getTodoLists().add(this);
+    }
+
+    public void updateStatusAndCompletedDate() {
+        this.status = !this.status;
+        this.completedAt = this.status ? LocalDateTime.now() : null;
     }
 }

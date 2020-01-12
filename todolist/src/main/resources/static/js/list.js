@@ -89,7 +89,6 @@ $(document).on("click",".update",function(){
 });
 
 $(document).on("click",".replyUpdate",function(){
-
     var jsonData = JSON.stringify({
         content : $(this).parent().parent().find('.replyContent').text()
     });
@@ -114,10 +113,8 @@ $('.complete').click(function () {
     var complete_id = $(this).val();
 
     $.ajax({
-        url: tdlUri + "status/" + complete_id,
+        url: tdlUri + complete_id + "/complete",
         type: "PUT",
-        contentType: jsonType,
-        dataType: "json",
         success: function () {
             location.reload();
         },

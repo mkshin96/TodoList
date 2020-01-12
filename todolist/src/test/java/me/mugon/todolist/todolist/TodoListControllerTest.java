@@ -216,6 +216,50 @@ class TodoListControllerTest extends BaseControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    @DisplayName("정상적으로 todo 완료시키기")
+    void complete_todo() throws Exception {
+        Account account = generateAccount();
+        TodoList savedTdl = createTdl(account);
+
+        //완료 요청
+        mockMvc.perform(put(todoUri + "/{id}/complete", savedTdl.getId())
+                .with(user(generateUserDetails())))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("description").value("운동 하기"))
+                .andExpect(jsonPath("status").value(true))
+                .andExpect(jsonPath("createdAt").exists())
+                .andExpect(jsonPath("updatedAt").isEmpty())
+                .andExpect(jsonPath("completedAt").isNotEmpty());
+
+        //미완료 미완료 요청
+        mockMvc.perform(put(todoUri + "/{id}/complete", savedTdl.getId())
+                .with(user(generateUserDetails())))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("description").value("운동 하기"))
+                .andExpect(jsonPath("status").value(false))
+                .andExpect(jsonPath("createdAt").exists())
+                .andExpect(jsonPath("updatedAt").isEmpty())
+                .andExpect(jsonPath("completedAt").isEmpty());
+    }
+
+    @Test
+    @DisplayName("tood 완료 요청 시 존재하지 않는 todo일 경우 Bad Request 반환")
+    void complete_todo__not_exits() throws Exception {
+        Account account = generateAccount();
+        createTdl(account);
+
+        mockMvc.perform(put(todoUri + "/{id}/complete", Long.MIN_VALUE)
+                .with(user(generateUserDetails())))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("존재하지 않는 todo입니다."));
+    }
+
     private TodoList createTdl(Account account) {
         TodoList tdl = TodoList.builder()
                 .description("운동 하기")
