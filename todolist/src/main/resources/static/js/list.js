@@ -1,11 +1,12 @@
 $('.reply').hide();
 var replyCount = 0;
 var divCount = 0;
-var tdlUri = "http://localhost:8080/todo/";
-var replyUri = "http://localhost:8080/reply/";
+var tdlUri = "http://localhost:8080/todolists/";
+var replyUri = "http://localhost:8080/comments/";
 var jsonType = "application/json";
 
 $('#register').click(function () {
+    console.log("버튼 누름");
     var description = '#description';
     if($(description).val().trim().length === 0){
         alert("내용을 입력하세요.");
@@ -42,7 +43,7 @@ $('.delete').click(function () {
         type: "DELETE",
         contentType: jsonType,
         success: function () {
-            location.href = '/todo/list';
+            location.href = '/todolists';
         },
         error: function () {
             alert('삭제 실패!');
@@ -58,7 +59,7 @@ $('.replyDelete').click(function () {
         type: "DELETE",
         contentType: jsonType,
         success: function () {
-            location.href = '/todo/list';
+            location.href = '/todolists';
         },
         error: function () {
             alert('삭제 실패!');
@@ -90,7 +91,7 @@ $(document).on("click",".update",function(){
 
 $(document).on("click",".replyUpdate",function(){
     var jsonData = JSON.stringify({
-        content : $(this).parent().parent().find('.replyContent').text()
+        body : $(this).parent().parent().find('.replyContent').text()
     });
     var update_id = $(this).val();
 
@@ -132,48 +133,45 @@ $('.replyButton').click(function () {
     reply_parent_id.fadeToggle();
     reply_parent_id2.fadeToggle();
 
-    var jsonData = JSON.stringify({
-        idx : reply_id
-    });
-
-    $.ajax({
-        url: replyUri + "checkIdx",
-        type: "POST",
-        data: jsonData,
-        contentType: jsonType,
-        dataType: "json",
-        success: function () {
-        },
-        error: function () {
-            alert('실패!');
-        }
-    });
+    // var jsonData = JSON.stringify({
+    //     idx : reply_id
+    // });
+    //
+    // $.ajax({
+    //     url: replyUri + "checkIdx",
+    //     type: "POST",
+    //     data: jsonData,
+    //     contentType: jsonType,
+    //     dataType: "json",
+    //     success: function () {
+    //     },
+    //     error: function () {
+    //         alert('실패!');
+    //     }
+    // });
 });
-
 
 $('.replyRegister').click(function () {
     replyCount++;
     divCount++;
-    localStorage.setItem('divCount', divCount);
-    console.log(localStorage.getItem('divCount'));
-
+    // console.log(localStorage.getItem('divCount'));
+    var tdlId = $(this).parent().parent().parent().find('.replyButton').val();
     var reply_id2 = $(this).val();
-
     var reply_text = $('.textBox input').eq(reply_id2 - 1).val();
 
     var jsonData = JSON.stringify({
-        content : reply_text
+        body : reply_text
     });
 
     $.ajax({
-        url: replyUri,
+        url: replyUri + tdlId,
         type: "POST",
         data: jsonData,
         contentType: jsonType,
         dataType: "json",
 
         success: function (data) {
-            var createdDate = data.createdDate.substring(0,10);
+            var createdDate = data.createdAt.substring(0,10);
 
             var node = document.createElement("dl");
             node.className = "deleteContent" + replyCount + " please3";
@@ -182,7 +180,7 @@ $('.replyRegister').click(function () {
 
             var node2 = document.createElement("dt");
 
-            var textNode = document.createTextNode(data.content + " ");
+            var textNode = document.createTextNode(data.body + " ");
 
             node2.appendChild(textNode);
             node2.setAttribute("contenteditable", "true");
@@ -201,7 +199,7 @@ $('.replyRegister').click(function () {
             deleteButton.setAttribute("type", "button");
             deleteButton.className="replyDelete2 btn-btn-default";
             deleteButton.setAttribute("id", "please2")
-            deleteButton.setAttribute("value", data.idx);
+            deleteButton.setAttribute("value", data.id);
             deleteButton.onclick = function (ev) {
                 var deVal = $(this).val();
                 console.log(deVal);
@@ -222,7 +220,7 @@ $('.replyRegister').click(function () {
             };
 
             var deleteI = document.createElement("img");
-            deleteI.setAttribute("src", "/images/delete2.png");
+            deleteI.setAttribute("src", "/images/delete.png");
             deleteI.setAttribute("width", "25px");
             deleteI.setAttribute("height", "25px");
 
@@ -243,7 +241,7 @@ $('.replyRegister').click(function () {
                 $.ajax({
                     url: replyUri + deVal,
                     type: "PUT",
-                    data: JSON.stringify({content : modified}),
+                    data: JSON.stringify({body : modified}),
                     contentType: jsonType,
                     dataType: "json",
                     success: function () {
@@ -256,7 +254,7 @@ $('.replyRegister').click(function () {
             };
 
             var updatel = document.createElement("img");
-            updatel.setAttribute("src", "/images/update2.png");
+            updatel.setAttribute("src", "/images/update.png");
             updatel.setAttribute("width", "25px");
             updatel.setAttribute("height", "25px");
 
@@ -279,8 +277,7 @@ $('.replyRegister').click(function () {
         error: function () {
         }
     });
-})
-
+});
 
 $('#deleteAll').click(function () {
     $.ajax({

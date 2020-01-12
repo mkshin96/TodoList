@@ -39,10 +39,10 @@ public class DummyData implements ApplicationRunner {
                                     .build();
         accountRepo.save(account);
 
-        IntStream.rangeClosed(1,30)
+        IntStream.rangeClosed(1,20)
                 .forEach((index) -> {
                     TodoList todoList = TodoList.builder()
-                            .description("할 일입니다." + index)
+                            .description("할 일" + index)
                             .status(false)
                             .createdAt(LocalDateTime.now())
                             .account(account)
