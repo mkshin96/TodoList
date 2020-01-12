@@ -1,7 +1,6 @@
 package me.mugon.todolist.controller;
 
 import lombok.RequiredArgsConstructor;
-import me.mugon.todolist.common.CurrentUser;
 import me.mugon.todolist.domain.dto.AccountDto;
 import me.mugon.todolist.service.AccountService;
 import org.springframework.http.ResponseEntity;

@@ -1,14 +1,13 @@
 package me.mugon.todolist.domain.adapter;
 
 import me.mugon.todolist.domain.Account;
-import me.mugon.todolist.domain.AccountRole;
+import me.mugon.todolist.domain.enums.AccountRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 

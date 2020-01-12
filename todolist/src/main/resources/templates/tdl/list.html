@@ -6,17 +6,17 @@
     <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Rajdhani" rel="stylesheet">
     <link href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <!--<link rel="stylesheet" href="/css/bootstrap.min.css"/>-->
     <link rel="stylesheet" href="/css/list.css"/>
 
 </head>
 <body>
 <div class="container">
     <div class="page-header">
-        <a href="http://localhost:8080/toDoList/list"> <h1>To Do List</h1></a>
+        <a href="http://localhost:8080/todolists"> <h1>To Do List</h1></a>
     </div>
     <br/>
-
+    <div>Hello!</div>
     <div id="mainHide">
         <head>
             <a class="head2">
@@ -34,26 +34,29 @@
         <body>
         <div th:each="toDoList : ${tdl}" class="textBox"  id = "textBox2">
             <dl>
-                <dt th:if="!${toDoList.status}" th:text="완료" th:value="${toDoList.idx}"></dt>
-                <dt th:if="${toDoList.status}" th:text="미완료" th:value="${toDoList.idx}"></dt>
+                <dt th:if="!${toDoList.status}" th:text="완료" th:value="${toDoList.id}"></dt>
+                <dt th:if="${toDoList.status}" th:text="미완료" th:value="${toDoList.id}"></dt>
                 <br>
-                <dt th:text="${toDoList.description} " th:value="${toDoList.idx}" contenteditable="true" class="updateContent"></dt>
+                <dt th:text="${toDoList.description}" th:value="${toDoList.id}" contenteditable="true" class="updateContent"></dt>
+                <dt th:text="${toDoList.status}" th:value="${toDoList.id}" contenteditable="true" class="updateContent"></dt>
+                <dt th:text="${toDoList.createdAt}" th:value="${toDoList.id}" contenteditable="true" class="updateContent"></dt>
+                <dt th:text="${toDoList.account.email}" th:value="${toDoList.id}" contenteditable="true" class="updateContent"></dt>
                 <br>
-                <dt th:text="${toDoList.createdDate} ? ${#temporals.format(toDoList.createdDate,'yyyy-MM-dd HH:mm')} : ${toDoList.createdDate}"> </dt>
+                <dt th:text="${toDoList.createdAt} ? ${#temporals.format(toDoList.createdAt,'yyyy-MM-dd HH:mm')} : ${toDoList.createdAt}"> </dt>
                 <span> ~ </span>
-                <dt th:text="${toDoList.completedDate} ? ${#temporals.format(toDoList.completedDate,'yyyy-MM-dd HH:mm')} : ${toDoList.completedDate}"></dt>
-                <dd th:if="!${toDoList.status}"><button type="button" class="complete btn btn-default" th:value="${toDoList.idx}" ><img src="/images/complete.png" width="25px" height="25"></button></dd>
-                <dd th:if="${toDoList.status}"><button type="button" class="complete btn btn-default" th:value="${toDoList.idx}" ><img src="/images/complete2.png" width="25px" height="25"></button></dd>
-                <dd><button type="button" class="update btn btn-default"  th:value="${toDoList.idx}"><img src="/images/update2.png" width="25px" height="25"></button></dd>
-                <dd><button type="button" class="delete btn btn-default"  th:value="${toDoList.idx}"><img src="/images/delete2.png" width="25px" height="25"></button></dd>
-                <dd><button type="button" class="replyButton btn btn-default"  th:value="${toDoList.idx}"><img src="/images/plus.png" width="25px" height="25"></button></dd>
+                <!--<dt th:text="${toDoList.completedDate} ? ${#temporals.format(toDoList.completedDate,'yyyy-MM-dd HH:mm')} : ${toDoList.completedDate}"></dt>-->
+                <!--<dd th:if="!${toDoList.status}"><button type="button" class="complete btn btn-default" th:value="${toDoList.id}" ><img src="/images/complete.png" width="25px" height="25"></button></dd>-->
+                <!--<dd th:if="${toDoList.status}"><button type="button" class="complete btn btn-default" th:value="${toDoList.id}" ><img src="/images/complete2.png" width="25px" height="25"></button></dd>-->
+                <!--<dd><button type="button" class="update btn btn-default"  th:value="${toDoList.id}"><img src="/images/update2.png" width="25px" height="25"></button></dd>-->
+                <!--<dd><button type="button" class="delete btn btn-default"  th:value="${toDoList.id}"><img src="/images/delete2.png" width="25px" height="25"></button></dd>-->
+                <!--<dd><button type="button" class="replyButton btn btn-default"  th:value="${toDoList.id}"><img src="/images/plus.png" width="25px" height="25"></button></dd>-->
             </dl>
 
             <br>
-            <span class="reply">
-                        <span><input class= "replyContent" type="text" placeholder="add.." style="width: 300px;" th:value="${toDoList.idx}" ></span>
-                        <span><button type="button" class="replyRegister" style="margin-left: -30px" th:value="${toDoList.idx}">등록 </button></span>
-                    </span>
+            <!--<span class="reply">-->
+                        <!--<span><input class= "replyContent" type="text" placeholder="add.." style="width: 300px;" th:value="${toDoList.idx}" ></span>-->
+                        <!--<span><button type="button" class="replyRegister" style="margin-left: -30px" th:value="${toDoList.idx}">등록 </button></span>-->
+            <!--</span>-->
         </div>
 
         </body>

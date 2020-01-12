@@ -1,7 +1,7 @@
 package me.mugon.todolist.controller;
 
 import lombok.RequiredArgsConstructor;
-import me.mugon.todolist.common.CurrentUser;
+import me.mugon.todolist.annotation.CurrentUser;
 import me.mugon.todolist.domain.Account;
 import me.mugon.todolist.domain.dto.TodoListDto;
 import me.mugon.todolist.service.TodoListService;
