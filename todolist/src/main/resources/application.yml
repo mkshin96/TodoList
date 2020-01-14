@@ -18,8 +18,8 @@ spring:
 #            client-id:
 #            client-secret:
           facebook:
-            client-id: 2712903008942408
-            client-secret: 1258109c92deadbdaa02a00ddfa296b0
+            client-id: -
+            client-secret: -
 logging:
   level:
     org:
@@ -33,4 +33,4 @@ app-properties:
 custom:
   oauth2:
     kakao:
-        client-id: 4236b1428dc75ac172f6063df9f0c5fe
+        client-id: -
