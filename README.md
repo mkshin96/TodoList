@@ -18,11 +18,10 @@
 2. `Download ZIP` 클릭
 3. 압축 풀기
 4. `IntelliJ`에서 열기
-5. `OAuth2`
-  5-1. [Kakao developers](https://developers.kakao.com/)에서 앱 만들기
-  5-2. `설정` -> `일반` -> `REST API키` 복사
-  5-3. `application.yml` -> `custom: oauth: kakao: client-id:`에 붙여넣기
-  5-4. [facebook for developers](https://developers.facebook.com/)에서 앱 만들기
-  5-5. `설정` -> `기본설정` -> `앱 ID`, `앱 시크릿 코드` 복사
-  5-6. `application.yml` -> `spring: security: oauth2: client: registration: facebook: client-id, client-secret`에 붙여넣기
-6. 실행
+5. [Kakao developers](https://developers.kakao.com/)에서 앱 만들기
+6. `설정` -> `일반` -> `REST API키` 복사
+7. `application.yml` -> `custom: oauth: kakao: client-id:`에 붙여넣기
+8. [facebook for developers](https://developers.facebook.com/)에서 앱 만들기
+9. `설정` -> `기본설정` -> `앱 ID`, `앱 시크릿 코드` 복사
+10. `application.yml` -> `spring: security: oauth2: client: registration: facebook: client-id, client-secret`에 붙여넣기
+11. 실행
