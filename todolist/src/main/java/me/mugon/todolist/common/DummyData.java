@@ -6,10 +6,8 @@ import me.mugon.todolist.domain.TodoList;
 import me.mugon.todolist.domain.enums.AccountRole;
 import me.mugon.todolist.repository.AccountRepository;
 import me.mugon.todolist.repository.TodoListRepository;
-import me.mugon.todolist.service.AccountService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -25,15 +23,13 @@ public class DummyData implements ApplicationRunner {
 
     private final TodoListRepository tdlRepo;
 
-    private final AppProperties appProperties;
-
     private final PasswordEncoder encoder;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         Account account = Account.builder()
-                                    .email(appProperties.getTestEmail())
-                                    .password(encoder.encode(appProperties.getTestPassword()))
+                                    .email("test@email.com")
+                                    .password(encoder.encode("password"))
                                     .createdAt(LocalDateTime.now())
                                     .accountRoles(Arrays.asList(AccountRole.USER))
                                     .build();
