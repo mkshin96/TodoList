@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter @Setter @EqualsAndHashCode(of = "id")
@@ -36,7 +37,7 @@ public class TodoList {
     private Account account;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "todoList")
-    private Set<Comment> comments;
+    private Set<Comment> comments = new HashSet<>();
 
     public void mappingAccount(Account currentUser) {
         if (this.account != null) {

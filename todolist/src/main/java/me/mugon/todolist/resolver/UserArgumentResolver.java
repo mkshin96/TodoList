@@ -22,6 +22,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Map;
 
 import static me.mugon.todolist.domain.enums.SocialType.*;
@@ -52,9 +53,17 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
                 Map<String, Object> map = authentication.getPrincipal().getAttributes();
                 Account convertAccount = convertAccount(authentication.getAuthorizedClientRegistrationId(), map);
                 assert convertAccount != null;
-                account = accountRepository.findByEmail(convertAccount.getEmail()).orElseGet(() -> accountRepository.save(convertAccount));
 
+                if (convertAccount.getSocialType() == FACEBOOK || convertAccount.getSocialType() == GOOGLE) {
+                    account = accountRepository.findByEmail(convertAccount.getEmail()).orElseGet(() -> accountRepository.save(convertAccount));
+                }
+                if (convertAccount.getSocialType() == KAKAO) {
+                    account = accountRepository.findByPrincipal(convertAccount.getPrincipal()).orElseGet(() -> accountRepository.save(convertAccount));
+                }
+
+                assert account != null;
                 selfRoleIfNotSame(account, authentication, map);
+                account.setTodoLists(new HashSet<>());
                 session.setAttribute("account", account);
             } catch (ClassCastException e) {
                 return getIdPasswordAccount();

@@ -7,6 +7,7 @@ import me.mugon.todolist.domain.enums.SocialType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,5 +42,5 @@ public class Account {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
-    private Set<TodoList> todoLists;
+    private Set<TodoList> todoLists = new HashSet<>();
 }
