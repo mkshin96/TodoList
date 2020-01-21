@@ -7,6 +7,7 @@
 - Spring Security를 사용한 ID/Password 로그인, 회원가입 구현
 - OAuth2 인증방식 구현
 - Jupiter를 사용한 테스트 코드 작성
+- APACHE JMETER 기본 사용법 학습 
 
 ### 개발 환경
 - [SpringBoot2.2.2](https://start.spring.io/)
